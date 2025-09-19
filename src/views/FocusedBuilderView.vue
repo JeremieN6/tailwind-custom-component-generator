@@ -3,6 +3,7 @@ import { ref, watchEffect, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useComponentCustomizerStore } from '../stores/componentCustomizer';
 import DynamicEditor from '../components/DynamicEditor.vue';
+import PreviewIframe from '../components/PreviewIframe.vue';
 
 const store = useComponentCustomizerStore();
 const { registry, componentId, currentDef, html, frameworks } = storeToRefs(store);
@@ -89,9 +90,9 @@ function toggleDark(){ darkMode.value = !darkMode.value; }
       <div class="flex-1 flex flex-col overflow-hidden">
         <div class="flex-1 overflow-auto">
           <div class="max-w-[1400px] mx-auto p-8">
-            <div :class="['border rounded-xl relative transition-colors group/preview', previewDark ? 'dark border-gray-800 bg-gray-950' : 'border-gray-200 bg-white preview-light']">
-              <div class="absolute top-3 left-3 text-[11px] px-2 py-0.5 bg-gray-200/70 dark:bg-gray-800/70 rounded text-gray-500 dark:text-gray-400">Preview</div>
-              <div class="p-10 preview-content" v-html="html"></div>
+            <div :class="['border rounded-xl overflow-hidden relative transition-colors', previewDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white']">
+              <div class="absolute top-3 left-3 z-10 text-[11px] px-2 py-0.5 bg-gray-200/70 dark:bg-gray-800/70 rounded text-gray-500 dark:text-gray-400">Preview</div>
+              <PreviewIframe :html="html" :dark="previewDark" padding-class="p-10" />
             </div>
           </div>
         </div>

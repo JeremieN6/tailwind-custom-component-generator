@@ -45,7 +45,7 @@ export function buildHeroHtml(tokens: HeroTokens): string {
     ? `style=\"background-image:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=80');\"`
     : '';
 
-  return `<section class=\"relative overflow-hidden ${bg} py-24\" ${imageStyle}>
+  return `<section class=\"relative overflow-hidden ${bg} py-24 full-bleed\" ${imageStyle}>
   <div class=\"relative z-10 px-6 ${tokens.maxWidth} ${containerAlign}\">
     <h1 class=\"text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gray-900 dark:text-white\" style=\"font-family:${tokens.fontFamily}\">${tokens.title}</h1>
     <p class=\"text-lg md:text-xl mb-10 max-w-2xl ${tokens.align === 'center' ? 'mx-auto' : ''} text-gray-600 dark:text-gray-300\" style=\"font-family:${tokens.fontFamily}\">${tokens.subtitle}</p>

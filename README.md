@@ -100,3 +100,6 @@ Pour ajouter un composant:
 2. Ajouter buildXHtml
 3. Pousser l'objet dans `componentRegistry`
 4. (Optionnel) tests dans `registry.spec.ts`
+
+## Isolation du thème de la prévisualisation
+Dans `FocusedBuilderView.vue`, la zone de preview est désormais rendue dans un iframe via `PreviewIframe.vue`. Cela isole le thème de la preview (prop `dark`) du thème global de l'UI (classe `dark` sur `<html>`). Résultat: quand l'UI est en mode sombre et la preview en clair, les titres, sous-titres et boutons restent correctement lisibles.
