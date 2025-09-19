@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, onMounted } from 'vue';
+import { ref, watchEffect, onMounted, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useComponentCustomizerStore } from '../stores/componentCustomizer';
 import DynamicEditor from '../components/DynamicEditor.vue';
@@ -14,6 +14,13 @@ const copied = ref(false);
 const darkMode = ref(true);
 const previewDark = ref(true); // thème isolé pour la zone preview
 function togglePreviewTheme(){ previewDark.value = !previewDark.value; }
+
+// Custom dropdown state for component selector
+const showComponentMenu = ref(false);
+const currentComponentLabel = computed(()=> registry.value.find(c=>c.id===componentId.value)?.label || 'Select Component');
+function chooseComponent(id: string){
+  componentId.value = id; store.select(id); showComponentMenu.value = false;
+}
 
 onMounted(()=>{
   const stored = localStorage.getItem('tbuilder:dark');
@@ -36,13 +43,21 @@ function toggleDark(){ darkMode.value = !darkMode.value; }
 <template>
   <div class="min-h-screen flex flex-col bg-white text-gray-800 dark:bg-gray-950 dark:text-gray-100 transition-colors">
   <!-- Top Toolbar -->
-  <div class="border-b border-gray-200 dark:border-gray-800 bg-gray-100/70 dark:bg-gray-900/90 backdrop-blur supports-[backdrop-filter]:bg-gray-100/50 dark:supports-[backdrop-filter]:bg-gray-900/70 transition-colors">
+  <div class="border-b border-gray-200 dark:border-gray-800 bg-gray-100/70 dark:bg-gray-900/90 backdrop-blur supports-[backdrop-filter]:bg-gray-100/50 dark:supports-[backdrop-filter]:bg-gray-900/70 transition-colors relative z-50">
       <div class="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 relative">
           <label class="text-xs text-gray-400">Component</label>
-          <select v-model="componentId" @change="store.select(componentId)" class="bg-gray-800 text-sm px-3 py-1.5 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option v-for="c in registry" :key="c.id" :value="c.id">{{ c.label }}</option>
-          </select>
+          <button @click="showComponentMenu=!showComponentMenu" class="text-sm px-3 py-1.5 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 flex items-center gap-2">
+            <span>{{ currentComponentLabel }}</span>
+            <span class="opacity-60">▾</span>
+          </button>
+          <div v-if="showComponentMenu" class="absolute top-full mt-1 left-14 z-[100] w-56 max-h-64 overflow-auto rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
+            <ul>
+              <li v-for="c in registry" :key="c.id">
+                <button @click="chooseComponent(c.id)" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100">{{ c.label }}</button>
+              </li>
+            </ul>
+          </div>
         </div>
         <button @click="showEditor = !showEditor" class="text-xs px-3 py-1.5 rounded border border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 transition">{{ showEditor ? 'Hide' : 'Show' }} Settings</button>
         <div class="ml-auto flex items-center gap-2">
@@ -59,9 +74,9 @@ function toggleDark(){ darkMode.value = !darkMode.value; }
     </div>
 
     <!-- Main Content Area -->
-    <div class="flex flex-1 overflow-hidden">
+  <div class="flex flex-1 overflow-hidden relative z-0">
       <!-- Editor Sidebar -->
-  <aside v-if="showEditor" class="w-72 border-r border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/50 overflow-y-auto p-5 space-y-6 backdrop-blur-sm transition-colors">
+  <aside v-if="showEditor" class="w-72 border-r border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/50 overflow-y-auto p-5 space-y-6 backdrop-blur-sm transition-colors relative z-10">
         <div>
           <h2 class="text-xs font-semibold tracking-wide text-gray-400 mb-3">Settings</h2>
           <div class="space-y-2 mb-4">
@@ -90,7 +105,7 @@ function toggleDark(){ darkMode.value = !darkMode.value; }
       <div class="flex-1 flex flex-col overflow-hidden">
         <div class="flex-1 overflow-auto">
           <div class="max-w-[1400px] mx-auto p-8">
-            <div :class="['border rounded-xl overflow-hidden relative transition-colors', previewDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white']">
+            <div :class="['border rounded-xl overflow-hidden relative transition-colors', previewDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white']" style="z-index:1">
               <div class="absolute top-3 left-3 z-10 text-[11px] px-2 py-0.5 bg-gray-200/70 dark:bg-gray-800/70 rounded text-gray-500 dark:text-gray-400">Preview</div>
               <PreviewIframe :html="html" :dark="previewDark" padding-class="p-10" />
             </div>
