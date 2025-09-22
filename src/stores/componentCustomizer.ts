@@ -13,11 +13,19 @@ export const useComponentCustomizerStore = defineStore('componentCustomizer', ()
   const html = computed(()=> currentDef.value.build(tokens.value));
   const frameworks = computed(()=> generateFrameworks(html.value));
 
+  // One-time migration: ensure Hero defaults follow UI theme unless explicitly changed now
+  if (currentDef.value.id === 'hero' && tokens.value.backgroundStyle && tokens.value.backgroundStyle !== 'theme') {
+    tokens.value = { ...tokens.value, backgroundStyle: 'theme' };
+  }
+
   function select(id: string) {
     const def = registry.value.find(c=>c.id===id);
     if(!def) return;
     componentId.value = id;
     tokens.value = { ...def.defaults };
+    if (def.id === 'hero' && tokens.value.backgroundStyle && tokens.value.backgroundStyle !== 'theme') {
+      tokens.value = { ...tokens.value, backgroundStyle: 'theme' };
+    }
   }
 
   function update(partial: Record<string, any>) {

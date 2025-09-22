@@ -10,7 +10,7 @@ export interface HeroTokens {
   gradientTo: string;
   fontFamily: string;
   rounded: string; // e.g. 'rounded-lg'
-  backgroundStyle: 'gradient' | 'solid' | 'image';
+  backgroundStyle: 'gradient' | 'solid' | 'image' | 'theme';
   maxWidth: string; // e.g. 'max-w-3xl'
   align: 'center' | 'left';
 }
@@ -27,7 +27,7 @@ export const defaultHeroTokens: HeroTokens = {
   gradientTo: '#6366f1',
   fontFamily: 'Inter',
   rounded: 'rounded-lg',
-  backgroundStyle: 'gradient',
+  backgroundStyle: 'theme',
   maxWidth: 'max-w-3xl',
   align: 'center'
 };
@@ -35,17 +35,25 @@ export const defaultHeroTokens: HeroTokens = {
 export function buildHeroHtml(tokens: HeroTokens): string {
   const containerAlign = tokens.align === 'center' ? 'text-center mx-auto' : 'text-left';
   const flexAlign = tokens.align === 'center' ? 'justify-center' : 'justify-start';
-  const bg = tokens.backgroundStyle === 'gradient'
-    ? `bg-gradient-to-r from-[${tokens.gradientFrom}] to-[${tokens.gradientTo}]`
-    : tokens.backgroundStyle === 'solid'
-      ? `bg-[${tokens.primaryColor}]`
-      : 'bg-cover bg-center';
+  // Prefer Tailwind utilities with CSS variables to keep dark mode intact and avoid minifier issues
+  let bgClass = '';
+  let styleAttr = '';
+  if (tokens.backgroundStyle === 'gradient') {
+    bgClass = 'bg-gradient-to-r from-[var(--c1)] to-[var(--c2)]';
+    styleAttr = `style=\"--c1:${tokens.gradientFrom};--c2:${tokens.gradientTo};\"`;
+  } else if (tokens.backgroundStyle === 'solid') {
+    bgClass = 'bg-[var(--solid-bg)]';
+    styleAttr = `style=\"--solid-bg:${tokens.primaryColor};\"`;
+  } else if (tokens.backgroundStyle === 'theme') {
+    // Follow global theme colors
+    bgClass = 'bg-white dark:bg-gray-900';
+    styleAttr = '';
+  } else if (tokens.backgroundStyle === 'image') {
+    bgClass = 'bg-cover bg-center';
+    styleAttr = `style=\"background-image:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=80');\"`;
+  }
 
-  const imageStyle = tokens.backgroundStyle === 'image'
-    ? `style=\"background-image:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=80');\"`
-    : '';
-
-  return `<section class=\"relative overflow-hidden ${bg} py-24 full-bleed\" ${imageStyle}>
+  return `<section class=\"relative overflow-hidden ${bgClass} py-24 full-bleed\" ${styleAttr}>
   <div class=\"relative z-10 px-6 ${tokens.maxWidth} ${containerAlign}\">
     <h1 class=\"text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gray-900 dark:text-white\" style=\"font-family:${tokens.fontFamily}\">${tokens.title}</h1>
     <p class=\"text-lg md:text-xl mb-10 max-w-2xl ${tokens.align === 'center' ? 'mx-auto' : ''} text-gray-600 dark:text-gray-300\" style=\"font-family:${tokens.fontFamily}\">${tokens.subtitle}</p>
