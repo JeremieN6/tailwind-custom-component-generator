@@ -13,7 +13,6 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const iframeRef = ref<HTMLIFrameElement | null>(null);
-const cssHref = new URL('../assets/main.css', import.meta.url).href;
 
 function writeDoc() {
   const iframe = iframeRef.value;
@@ -27,7 +26,6 @@ function writeDoc() {
   <html class="${darkClass}"><head>
     <meta charset=\"utf-8\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-    <link rel=\"stylesheet\" href=\"${cssHref}\">
     <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
     <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
     <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap\" rel=\"stylesheet\">
@@ -71,6 +69,24 @@ function writeDoc() {
   doc.open();
   doc.write(html);
   doc.close();
+
+  // After writing, clone parent stylesheets (hashed build CSS) into the iframe
+  try {
+    const parentLinks = Array.from(window.document.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[];
+    parentLinks.forEach((lnk) => {
+      const clone = doc.createElement('link');
+      clone.setAttribute('rel', 'stylesheet');
+      clone.setAttribute('href', lnk.getAttribute('href') || '');
+      doc.head.appendChild(clone);
+    });
+    // Also copy inline <style> tags if any (rare in prod, common in dev)
+    const parentStyles = Array.from(window.document.querySelectorAll('style')) as HTMLStyleElement[];
+    parentStyles.forEach((st) => {
+      const clone = doc.createElement('style');
+      clone.textContent = st.textContent || '';
+      doc.head.appendChild(clone);
+    });
+  } catch {}
 }
 
 function handleMessage(e: MessageEvent) {
