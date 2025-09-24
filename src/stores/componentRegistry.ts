@@ -1,6 +1,12 @@
 // Import uniquement la fonction de construction Hero (les types ne sont pas nécessaires ici au runtime)
 import { buildHeroHtml } from './heroTemplate';
 
+function fontStack(font: string) {
+  const needsQuote = /\s/.test(font);
+  const primary = needsQuote ? `'${font}'` : font;
+  return `${primary}, Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif`;
+}
+
 // Shared token shape base
 export interface BaseTokens {
   fontFamily: string;
@@ -52,7 +58,8 @@ const ctaDefaults: CtaTokens = {
 };
 function buildCtaHtml(t: CtaTokens) {
   const align = t.align === 'center' ? 'text-center mx-auto' : 'text-left';
-  return `<section class=\"py-20\"><div class=\"px-6 ${t.width} ${align}\"><h2 class=\"text-4xl font-bold mb-6 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300 mb-8\" style=\"font-family:${t.fontFamily}\">${t.subtitle}</p><a href=\"#\" class=\"inline-flex px-8 py-3 text-white font-medium ${t.rounded}\" style=\"background:${t.primaryColor};font-family:${t.fontFamily}\">${t.buttonLabel}</a></div></section>`;
+  const ff = fontStack(t.fontFamily);
+  return `<section class=\"py-20\"><div class=\"px-6 ${t.width} ${align}\"><h2 class=\"text-4xl font-bold mb-6 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300 mb-8\" style=\"font-family:${ff}\">${t.subtitle}</p><a href=\"#\" class=\"inline-flex px-8 py-3 text-white font-medium ${t.rounded}\" style=\"background:${t.primaryColor};font-family:${ff}\">${t.buttonLabel}</a></div></section>`;
 }
 
 // Pricing simple
@@ -78,7 +85,8 @@ const pricingDefaults: PricingTokens = {
   rounded: 'rounded-lg'
 };
 function buildPricingHtml(t: PricingTokens) {
-  return `<section class=\"py-24\"><div class=\"px-6 max-w-5xl mx-auto text-center mb-14\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${t.fontFamily}\">${t.subtitle}</p></div><div class=\"grid md:grid-cols-3 gap-8 max-w-5xl mx-auto\">${['Starter','Pro','Enterprise'].map((plan,i)=>{const price=[t.priceA,t.priceB,t.priceC][i];const highlight=i===1;const borderClass = highlight?`style=\\\"border-color:${t.primaryColor}\\\" border-2`:'border border-gray-200 dark:border-gray-700';const badge = highlight?`<div class=\\\"absolute -top-3 left-1/2 -translate-x-1/2 text-white text-xs px-3 py-1 rounded-full\\\" style=\\\"background:${t.primaryColor}\\\">${t.highlightLabel}</div>`:'';return `<div class=\"${borderClass} p-6 ${t.rounded} text-center relative\">${badge}<h3 class=\"text-xl font-semibold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${plan}</h3><div class=\"text-3xl font-bold mb-4\" style=\"color:${highlight?t.primaryColor:t.secondaryColor};font-family:${t.fontFamily}\">${price}</div><a href=\"#\" class=\"inline-flex w-full justify-center px-4 py-2 text-sm font-medium ${highlight?'text-white':''} ${t.rounded} border transition\" style=\"background:${highlight?t.primaryColor:'transparent'};border-color:${t.primaryColor};color:${highlight?'white':t.primaryColor};font-family:${t.fontFamily}\">Choose Plan</a></div>`}).join('')}</div></section>`;
+  const ff = fontStack(t.fontFamily);
+  return `<section class=\"py-24\"><div class=\"px-6 max-w-5xl mx auto text-center mb-14\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${ff}\">${t.subtitle}</p></div><div class=\"grid md:grid-cols-3 gap-8 max-w-5xl mx-auto\">${['Starter','Pro','Enterprise'].map((plan,i)=>{const price=[t.priceA,t.priceB,t.priceC][i];const highlight=i===1;const borderClass = highlight?`style=\\\"border-color:${t.primaryColor}\\\" border-2`:'border border-gray-200 dark:border-gray-700';const badge = highlight?`<div class=\\\"absolute -top-3 left-1/2 -translate-x-1/2 text-white text-xs px-3 py-1 rounded-full\\\" style=\\\"background:${t.primaryColor}\\\">${t.highlightLabel}</div>`:'';return `<div class=\"${borderClass} p-6 ${t.rounded} text-center relative\">${badge}<h3 class=\"text-xl font-semibold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${plan}</h3><div class=\"text-3xl font-bold mb-4\" style=\"color:${highlight?t.primaryColor:t.secondaryColor};font-family:${ff}\">${price}</div><a href=\"#\" class=\"inline-flex w-full justify-center px-4 py-2 text-sm font-medium ${highlight?'text-white':''} ${t.rounded} border transition\" style=\"background:${highlight?t.primaryColor:'transparent'};border-color:${t.primaryColor};color:${highlight?'white':t.primaryColor};font-family:${ff}\">Choose Plan</a></div>`}).join('')}</div></section>`;
 }
 
 // Features simple
@@ -98,7 +106,8 @@ const featuresDefaults: FeaturesTokens = {
 };
 function buildFeaturesHtml(t: FeaturesTokens) {
   const list = t.items.split(',').map(s=>s.trim());
-  return `<section class=\"py-24\"><div class=\"px-6 max-w-4xl mx-auto text-center mb-16\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${t.fontFamily}\">${t.subtitle}</p></div><div class=\"grid md:grid-cols-3 gap-10 max-w-5xl mx-auto\">${list.map((label,i)=>{const color=[t.primaryColor,t.accentColor,t.secondaryColor||t.primaryColor][i%3];return `<div class=\"text-center\"><div class=\"w-14 h-14 mx-auto mb-4 rounded-lg flex items-center justify-center\" style=\"background:${color}20\"><div class=\"w-7 h-7 rounded\" style=\"background:${color}\"></div></div><h3 class=\"text-xl font-semibold mb-2 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${label}</h3><p class=\"text-gray-600 dark:text-gray-300 text-sm\">Lorem ipsum dolor sit amet.</p></div>`}).join('')}</div></section>`;
+  const ff = fontStack(t.fontFamily);
+  return `<section class=\"py-24\"><div class=\"px-6 max-w-4xl mx-auto text-center mb-16\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${ff}\">${t.subtitle}</p></div><div class=\"grid md:grid-cols-3 gap-10 max-w-5xl mx-auto\">${list.map((label,i)=>{const color=[t.primaryColor,t.accentColor,t.secondaryColor||t.primaryColor][i%3];return `<div class=\"text-center\"><div class=\"w-14 h-14 mx-auto mb-4 rounded-lg flex items-center justify-center\" style=\"background:${color}20\"><div class=\"w-7 h-7 rounded\" style=\"background:${color}\"></div></div><h3 class=\"text-xl font-semibold mb-2 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${label}</h3><p class=\"text-gray-600 dark:text-gray-300 text-sm\">Lorem ipsum dolor sit amet.</p></div>`}).join('')}</div></section>`;
 }
 
 // FAQ simple
@@ -106,7 +115,8 @@ interface FaqTokens extends BaseTokens { title: string; subtitle: string; questi
 const faqDefaults: FaqTokens = { title: 'Frequently Asked Questions', subtitle: 'Get answers to common questions', questions: 'How does it work?,Is it customizable?,What frameworks are supported?', fontFamily:'Inter', primaryColor:'#3b82f6'};
 function buildFaqHtml(t: FaqTokens){
   const qs = t.questions.split(',').map(q=>q.trim());
-  return `<section class=\"py-24\"><div class=\"px-6 max-w-4xl mx-auto text-center mb-14\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${t.fontFamily}\">${t.subtitle}</p></div><div class=\"max-w-3xl mx-auto space-y-4\">${qs.map(q=>`<div class=\"border border-gray-200 dark:border-gray-700 p-4 rounded-lg flex justify-between items-center\" style=\"border-color:${t.primaryColor}30;font-family:${t.fontFamily}\"><span class=\"text-gray-900 dark:text-white\">${q}</span><span class=\"w-6 h-6 flex items-center justify-center rounded-full text-white text-sm\" style=\"background:${t.primaryColor}\">+</span></div>`).join('')}</div></section>`;
+    const ff = fontStack(t.fontFamily);
+    return `<section class=\"py-24\"><div class=\"px-6 max-w-4xl mx-auto text-center mb-14\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${ff}\">${t.subtitle}</p></div><div class=\"max-w-3xl mx-auto space-y-4\">${qs.map(q=>`<div class=\"border border-gray-200 dark:border-gray-700 p-4 rounded-lg flex justify-between items-center\" style=\"border-color:${t.primaryColor}30;font-family:${ff}\"><span class=\"text-gray-900 dark:text-white\">${q}</span><span class=\"w-6 h-6 flex items-center justify-center rounded-full text-white text-sm\" style=\"background:${t.primaryColor}\">+</span></div>`).join('')}</div></section>`;
 }
 
 // Testimonials simple
@@ -114,7 +124,8 @@ interface TestimonialsTokens extends BaseTokens { title:string; subtitle:string;
 const testimonialsDefaults: TestimonialsTokens = { title:'What Our Customers Say', subtitle:'Trusted by developers worldwide', names:'John Doe,Jane Smith,Mike Johnson', fontFamily:'Inter', primaryColor:'#3b82f6', accentColor:'#f59e0b'};
 function buildTestimonialsHtml(t: TestimonialsTokens){
   const names = t.names.split(',').map(n=>n.trim());
-  return `<section class=\"py-24 bg-gray-50 dark:bg-gray-900\"><div class=\"px-6 max-w-4xl mx-auto text-center mb-14\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${t.fontFamily}\">${t.subtitle}</p></div><div class=\"grid md:grid-cols-3 gap-8 max-w-5xl mx-auto\">${names.map((n,i)=>{const color = [t.primaryColor,t.accentColor,t.secondaryColor||t.primaryColor][i%3];return `<div class=\"bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-6 rounded-lg shadow-sm\"><div class=\"flex mb-4\">${Array.from({length:5}).map(()=>`<div class=\"w-4 h-4 mr-1 rounded\" style=\"background:${t.accentColor}\"></div>`).join('')}</div><p class=\"text-gray-600 dark:text-gray-300 mb-4 text-sm\">\"Amazing tool for rapid prototyping!\"</p><div class=\"flex items-center\"><div class=\"w-10 h-10 rounded-full mr-3\" style=\"background:${color}\"></div><div><div class=\"font-semibold text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${n}</div><div class=\"text-xs text-gray-500 dark:text-gray-400\">Customer</div></div></div></div>`}).join('')}</div></section>`;
+  const ff = fontStack(t.fontFamily);
+  return `<section class="py-24 bg-gray-50 dark:bg-gray-900"><div class="px-6 max-w-4xl mx-auto text-center mb-14"><h2 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white" style="font-family:${ff}">${t.title}</h2><p class="text-lg text-gray-600 dark:text-gray-300" style="font-family:${ff}">${t.subtitle}</p></div><div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">${names.map((n,i)=>{const color = [t.primaryColor,t.accentColor,t.secondaryColor||t.primaryColor][i%3];return `<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-6 rounded-lg shadow-sm"><div class="flex mb-4">${Array.from({length:5}).map(()=>`<div class=\"w-4 h-4 mr-1 rounded\" style=\"background:${t.accentColor}\"></div>`).join('')}</div><p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">"Amazing tool for rapid prototyping!"</p><div class="flex items-center"><div class="w-10 h-10 rounded-full mr-3" style="background:${color}"></div><div><div class="font-semibold text-gray-900 dark:text-white" style="font-family:${ff}">${n}</div><div class="text-xs text-gray-500 dark:text-gray-400">Customer</div></div></div></div>`}).join('')}</div></section>`;
 }
 
 // Hero reuse existing tokens & builder
@@ -158,7 +169,7 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'align', label: 'Align', type: 'select', options:[{label:'Center',value:'center'},{label:'Left',value:'left'}] },
       { key: 'width', label: 'Width', type: 'select', options:[{label:'2XL',value:'max-w-2xl'},{label:'3XL',value:'max-w-3xl'}] },
       { key: 'primaryColor', label: 'Primary Color', type: 'color' },
-      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'},{label:'Roboto',value:'Roboto'}] },
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] },
       { key: 'rounded', label: 'Rounded', type: 'select', options:[{label:'None',value:'rounded-none'},{label:'Default',value:'rounded'},{label:'lg',value:'rounded-lg'}] }
     ],
     build: (t:any)=>buildCtaHtml(t)
@@ -178,7 +189,7 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'priceC', label: 'Price C', type: 'text' },
       { key: 'primaryColor', label: 'Primary Color', type: 'color' },
       { key: 'secondaryColor', label: 'Secondary Color', type: 'color' },
-      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'}] },
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'},{label:'Open Sans',value:'Open Sans'}] },
       { key: 'rounded', label: 'Rounded', type: 'select', options:[{label:'None',value:'rounded-none'},{label:'Default',value:'rounded'},{label:'lg',value:'rounded-lg'}] }
     ],
     build: (t:any)=>buildPricingHtml(t)
@@ -196,7 +207,7 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'primaryColor', label: 'Primary Color', type: 'color' },
       { key: 'secondaryColor', label: 'Secondary Color', type: 'color' },
       { key: 'accentColor', label: 'Accent Color', type: 'color' },
-      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'}] }
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] }
     ],
     build: (t:any)=>buildFeaturesHtml(t)
   },
@@ -211,7 +222,7 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'subtitle', label: 'Subtitle', type: 'textarea' },
       { key: 'questions', label: 'Questions (comma list)', type: 'text' },
       { key: 'primaryColor', label: 'Primary Color', type: 'color' },
-      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'}] }
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] }
     ],
     build: (t:any)=>buildFaqHtml(t)
   },
@@ -228,7 +239,7 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'primaryColor', label: 'Primary Color', type: 'color' },
       { key: 'secondaryColor', label: 'Secondary Color', type: 'color' },
       { key: 'accentColor', label: 'Accent Color', type: 'color' },
-      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'}] }
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'},{label:'Open Sans',value:'Open Sans'}] }
     ],
     build: (t:any)=>buildTestimonialsHtml(t)
   }
@@ -259,14 +270,16 @@ const navbarDefaults: NavbarTokens = {
 };
 function buildNavbarHtml(t: NavbarTokens){
   const items = t.links.split(',').map(s=>s.trim());
-  return `<nav class=\"py-4\"><div class=\"px-6 max-w-6xl mx-auto flex items-center justify-between\"><div class=\"text-lg font-semibold text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${t.brand}</div><ul class=\"hidden md:flex items-center gap-6 text-sm\" style=\"font-family:${t.fontFamily}\">${items.map(i=>`<li><a href=\"#\" class=\"text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white\">${i}</a></li>`).join('')}</ul><a href=\"#\" class=\"md:hidden inline-flex items-center justify-center w-9 h-9 rounded border border-gray-300 dark:border-gray-600\" style=\"border-color:${t.primaryColor}50\">☰</a></div></nav>`;
+  const ff = fontStack(t.fontFamily);
+  return `<nav class="py-4"><div class="px-6 max-w-6xl mx-auto flex items-center justify-between"><div class="text-lg font-semibold text-gray-900 dark:text-white" style="font-family:${ff}">${t.brand}</div><ul class="hidden md:flex items-center gap-6 text-sm" style="font-family:${ff}">${items.map(i=>`<li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">${i}</a></li>`).join('')}</ul><a href="#" class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded border border-gray-300 dark:border-gray-600" style="border-color:${t.primaryColor}50">☰</a></div></nav>`;
 }
 
 // Footer
 interface FooterTokens extends BaseTokens { copyright: string; }
 const footerDefaults: FooterTokens = { copyright: '© 2025 Your Company. All rights reserved.', fontFamily:'Inter', primaryColor:'#3b82f6'};
 function buildFooterHtml(t: FooterTokens){
-  return `<footer class=\"py-10 bg-gray-50 dark:bg-gray-900\"><div class=\"px-6 max-w-6xl mx-auto text-center text-sm text-gray-600 dark:text-gray-400\" style=\"font-family:${t.fontFamily}\">${t.copyright}</div></footer>`;
+  const ff = fontStack(t.fontFamily);
+  return `<footer class="py-10 bg-gray-50 dark:bg-gray-900"><div class="px-6 max-w-6xl mx-auto text-center text-sm text-gray-600 dark:text-gray-400" style="font-family:${ff}">${t.copyright}</div></footer>`;
 }
 
 // Blog Cards
@@ -274,7 +287,8 @@ interface BlogTokens extends BaseTokens { title:string; subtitle:string; posts:s
 const blogDefaults: BlogTokens = { title:'Latest Articles', subtitle:'Insights and tutorials', posts:'Design Systems,Build Faster,Ship Confidently', fontFamily:'Inter', primaryColor:'#3b82f6'};
 function buildBlogHtml(t: BlogTokens){
   const posts = t.posts.split(',').map(s=>s.trim());
-  return `<section class=\"py-24\"><div class=\"px-6 max-w-5xl mx-auto text-center mb-14\"><h2 class=\"text-4xl font-bold mb-2 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${t.title}</h2><p class=\"text-gray-600 dark:text-gray-300\" style=\"font-family:${t.fontFamily}\">${t.subtitle}</p></div><div class=\"grid sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto\">${posts.map(p=>`<article class=\"border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900\"><div class=\"h-28 bg-gray-200 dark:bg-gray-800\"></div><div class=\"p-4\"><h3 class=\"font-semibold mb-1 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${p}</h3><p class=\"text-xs text-gray-500 dark:text-gray-400\">Lorem ipsum dolor sit amet.</p></div></article>`).join('')}</div></section>`;
+  const ff = fontStack(t.fontFamily);
+  return `<section class="py-24"><div class="px-6 max-w-5xl mx-auto text-center mb-14"><h2 class="text-4xl font-bold mb-2 text-gray-900 dark:text-white" style="font-family:${ff}">${t.title}</h2><p class="text-gray-600 dark:text-gray-300" style="font-family:${ff}">${t.subtitle}</p></div><div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">${posts.map(p=>`<article class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900"><div class="h-28 bg-gray-200 dark:bg-gray-800"></div><div class="p-4"><h3 class="font-semibold mb-1 text-gray-900 dark:text-white" style="font-family:${ff}">${p}</h3><p class="text-xs text-gray-500 dark:text-gray-400">Lorem ipsum dolor sit amet.</p></div></article>`).join('')}</div></section>`;
 }
 
 // Paragraph with Image
@@ -283,7 +297,8 @@ const mediaTextDefaults: MediaTextTokens = { title:'Beautifully simple', text:'C
 function buildMediaTextHtml(t: MediaTextTokens){
   const orderA = t.align==='left' ? 'md:order-1' : 'md:order-2';
   const orderB = t.align==='left' ? 'md:order-2' : 'md:order-1';
-  return `<section class=\"py-24\"><div class=\"px-6 max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center\"><div class=\"${orderA}\"><img src=\"${t.imageUrl}\" alt=\"\" class=\"w-full h-64 object-cover ${t.rounded}\"></div><div class=\"${orderB}\"><h2 class=\"text-3xl font-bold mb-3 text-gray-900 dark:text-white\" style=\"font-family:${t.fontFamily}\">${t.title}</h2><p class=\"text-gray-600 dark:text-gray-300 mb-6\" style=\"font-family:${t.fontFamily}\">${t.text}</p><a href=\"#\" class=\"inline-flex px-5 py-2 text-white ${t.rounded}\" style=\"background:${t.primaryColor};font-family:${t.fontFamily}\">Learn more</a></div></div></section>`;
+  const ff = fontStack(t.fontFamily);
+  return `<section class="py-24"><div class="px-6 max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center"><div class="${orderA}"><img src="${t.imageUrl}" alt="" class="w-full h-64 object-cover ${t.rounded}"></div><div class="${orderB}"><h2 class="text-3xl font-bold mb-3 text-gray-900 dark:text-white" style="font-family:${ff}">${t.title}</h2><p class="text-gray-600 dark:text-gray-300 mb-6" style="font-family:${ff}">${t.text}</p><a href="#" class="inline-flex px-5 py-2 text-white ${t.rounded}" style="background:${t.primaryColor};font-family:${ff}">Learn more</a></div></div></section>`;
 }
 
 // Push into registry
@@ -297,7 +312,7 @@ componentRegistry.push(
     fields: [
       { key: 'brand', label: 'Brand', type: 'text' },
       { key: 'links', label: 'Links (comma list)', type: 'text' },
-      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'}] },
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] },
       { key: 'primaryColor', label: 'Primary Color', type: 'color' }
     ],
     build: (t:any)=>buildNavbarHtml(t)
@@ -310,7 +325,7 @@ componentRegistry.push(
     defaults: footerDefaults,
     fields: [
       { key: 'copyright', label: 'Copyright', type: 'text' },
-      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'}] }
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] }
     ],
     build: (t:any)=>buildFooterHtml(t)
   },
@@ -324,7 +339,7 @@ componentRegistry.push(
       { key: 'title', label: 'Title', type: 'text' },
       { key: 'subtitle', label: 'Subtitle', type: 'text' },
       { key: 'posts', label: 'Posts (comma list)', type: 'text' },
-      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'}] }
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] }
     ],
     build: (t:any)=>buildBlogHtml(t)
   },

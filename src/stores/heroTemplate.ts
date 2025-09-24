@@ -33,6 +33,8 @@ export const defaultHeroTokens: HeroTokens = {
 };
 
 export function buildHeroHtml(tokens: HeroTokens): string {
+  const needsQuote = /\s/.test(tokens.fontFamily);
+  const ff = `${needsQuote ? `'${tokens.fontFamily}'` : tokens.fontFamily}, Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif`;
   const containerAlign = tokens.align === 'center' ? 'text-center mx-auto' : 'text-left';
   const flexAlign = tokens.align === 'center' ? 'justify-center' : 'justify-start';
   // Prefer Tailwind utilities with CSS variables to keep dark mode intact and avoid minifier issues
@@ -55,11 +57,11 @@ export function buildHeroHtml(tokens: HeroTokens): string {
 
   return `<section class=\"relative overflow-hidden ${bgClass} py-24 full-bleed\" ${styleAttr}>
   <div class=\"relative z-10 px-6 ${tokens.maxWidth} ${containerAlign}\">
-    <h1 class=\"text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gray-900 dark:text-white\" style=\"font-family:${tokens.fontFamily}\">${tokens.title}</h1>
-    <p class=\"text-lg md:text-xl mb-10 max-w-2xl ${tokens.align === 'center' ? 'mx-auto' : ''} text-gray-600 dark:text-gray-300\" style=\"font-family:${tokens.fontFamily}\">${tokens.subtitle}</p>
+  <h1 class=\"text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${tokens.title}</h1>
+  <p class=\"text-lg md:text-xl mb-10 max-w-2xl ${tokens.align === 'center' ? 'mx-auto' : ''} text-gray-600 dark:text-gray-300\" style=\"font-family:${ff}\">${tokens.subtitle}</p>
     <div class=\"flex flex-wrap gap-4 ${flexAlign}\">
-      <a href=\"#\" class=\"inline-flex items-center px-8 py-3 font-medium text-white shadow ${tokens.rounded}\" style=\"background:${tokens.primaryColor};font-family:${tokens.fontFamily}\">${tokens.primaryButtonLabel}</a>
-      ${tokens.showSecondary ? `<a href=\"#\" class=\"inline-flex items-center px-8 py-3 font-medium ring-1 ring-inset transition ${tokens.rounded} text-gray-700 dark:text-white/90 ring-gray-300 dark:ring-white/40 hover:bg-gray-100 dark:hover:bg-white/10\" style=\"font-family:${tokens.fontFamily}\">${tokens.secondaryButtonLabel}</a>` : ''}
+  <a href=\"#\" class=\"inline-flex items-center px-8 py-3 font-medium text-white shadow ${tokens.rounded}\" style=\"background:${tokens.primaryColor};font-family:${ff}\">${tokens.primaryButtonLabel}</a>
+  ${tokens.showSecondary ? `<a href=\"#\" class=\"inline-flex items-center px-8 py-3 font-medium ring-1 ring-inset transition ${tokens.rounded} text-gray-700 dark:text-white/90 ring-gray-300 dark:ring-white/40 hover:bg-gray-100 dark:hover:bg-white/10\" style=\"font-family:${ff}\">${tokens.secondaryButtonLabel}</a>` : ''}
     </div>
   </div>
   <div class=\"absolute inset-0 bg-black/30\" aria-hidden=\"true\" style=\"display:${tokens.backgroundStyle === 'image' ? 'block' : 'none'}\"></div>
