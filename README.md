@@ -1,105 +1,102 @@
-# .
+# Tailwind Component Builder
 
-This template should help get you started developing with Vue 3 in Vite.
+Un outil de prototypage visuel pour composer et exporter des sections UI construites avec Tailwind CSS.
 
-## Recommended IDE Setup
+## Résumé
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Cette application permet de créer des sections (Hero, CTA, Pricing, Features, FAQ, Testimonials, etc.) via un éditeur visuel. Elle génère du HTML Tailwind prêt à l'emploi et propose des wrappers exportables pour plusieurs frameworks (Vue, React, Svelte, Angular) ainsi que du HTML brut.
 
-## Type Support for `.vue` Imports in TS
+## Pourquoi cet outil a été développé
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Le but est de réduire le temps nécessaire pour prototyper des sections UI réutilisables :
+- Permettre aux designers/développeurs de composer visuellement des composants Tailwind.
+- Garantir l'isolation du rendu (mode sombre/clair et polices) pour reproduire fidèlement l'apparence lors d'une exportation.
+- Produire du code prêt à intégrer dans différents frameworks sans écrire manuellement la structure complète.
+- Garantir des composants de style différents tout en utilisant toujours tailwind. (Via modification de font, de taille, de couleurs etc.)
 
-## Customize configuration
+## Principales fonctionnalités
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- Éditeur visuel en temps réel avec panneau de paramètres.
+- Composants paramétrables : Hero, CTA, Pricing, Features, FAQ, Testimonials, Blog cards, Navbar, Footer, Media+Text, etc.
+- Choix de la police, couleurs, arrondis, images de fond et autres tokens visuels.
+- Preview isolée dans un iframe pour éviter les fuites de thème (dark/light) et de styles.
+- Export multi-framework (Vue, React, Svelte, Angular, HTML) et copie en un clic.
+- Génération de HTML via un registry centralisé (`src/stores/componentRegistry.ts`).
 
-## Project Setup
+## Stack technique
 
-```sh
+- Framework : Vue 3 (script setup, composition API)
+- Bundler / Dev server : Vite
+- Styling : Tailwind CSS
+- State : Pinia
+- Tests : Vitest
+- Langage : TypeScript
+
+## Récupérer le projet
+
+Ouvre un terminal PowerShell et exécute :
+
+```powershell
+# cloner le repo
+git clone <REPO_URL>
+cd tailwind-component-generator
+
+# installer les dépendances
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+Remplace `<REPO_URL>` par l'URL du dépôt GitHub.
 
-```sh
+## Lancer en développement
+
+```powershell
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+Puis ouvrir `http://localhost:5173` (ou l'URL indiquée par Vite).
 
-```sh
-npm run build
-```
+## Scripts utiles
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+- `npm run dev`       - Démarrer le serveur de développement
+- `npm run build`     - Compiler pour la production (minification)
+- `npm run preview`   - Lancer un serveur local pour tester le build de production
+- `npm run test:unit` - Exécuter les tests unitaires (Vitest)
+- `npm run lint`      - Exécuter ESLint
 
-```sh
-npm run test:unit
-```
+## Structure importante
 
-### Lint with [ESLint](https://eslint.org/)
+- `src/views/FocusedBuilderView.vue` : l'interface principale (toolbar, panneau de paramètres, preview, zone code)
+- `src/components/PreviewIframe.vue` : encapsule la preview dans un iframe et charge les polices/styles nécessaires
+- `src/components/DynamicEditor.vue` : formulaire dynamique généré depuis la registry
+- `src/stores/componentRegistry.ts` : registry centralisant tokens, métadonnées des champs et fonctions `build(tokens)` pour chaque composant
+- `src/stores/componentCustomizer.ts` : état Pinia pour les tokens et le HTML généré
 
-```sh
-npm run lint
-```
+## Comment ajouter un nouveau composant
 
-# Tailwind Builder
+1. Ajouter une interface `XxxTokens` et des valeurs par défaut dans `componentRegistry.ts`.
+2. Implémenter `buildXxxHtml(tokens: XxxTokens)` qui retourne le HTML Tailwind de la section.
+3. Enregistrer le composant dans la registry avec son formulaire de tokens (labels, types, options).
+4. (Optionnel) Ajouter des tests dans `src/components/__tests__`.
 
-## Hero Live Customizer (Nouveau)
+## Bonnes pratiques et notes
 
-Un éditeur visuel pour construire une section Hero unique :
+- Les polices utilisées dans la preview sont chargées explicitement dans l'iframe (voir `PreviewIframe.vue`) pour éviter les problèmes de fallback lors de l'export.
+- Les classes Tailwind sont rendues via le CSS principal copié/cloné dans l'iframe pour conserver la même apparence qu'en production.
+- Les tokens (couleurs, polices, arrondis) sont pensés pour produire du HTML autonome, facile à copier/coller dans un projet existant.
 
-Fonctionnalités clés :
-- Édition en direct du texte (titre, sous-titre, labels boutons)
-- Choix alignement (centre / gauche) et largeur max
-- Bouton secondaire optionnel
-- Couleurs primaires / secondaires + dégradé personnalisable
-- Style de fond: gradient / solid / image
-- Choix arrondis et famille de police
-- Export instantané multi-framework (Vue, React, Svelte, Angular, HTML brut)
-- Copie en un clic du code actuellement sélectionné
+## Dépannage rapide
 
-### Génération de code
-La génération se fait via `src/stores/heroTemplate.ts` qui fournit:
-- `buildHeroHtml(tokens)` pour interpoler les tokens
-- `generateFrameworkWrappers(html, tokens)` pour produire les variations framework
+- Si la preview affiche des styles bizarres après modification : relancer Vite ou vider le cache du navigateur.
+- Si une police ne s'applique pas en production : vérifier que la famille est chargée dans le HTML exporté ou que la règle @import Google Fonts est incluse.
+- Problèmes TypeScript : installer correctement les dépendances et utiliser `vue-tsc` pour la vérification.
 
-### Ajouter un nouveau framework
-1. Ouvrir `heroTemplate.ts`
-2. Étendre l'interface `MultiFrameworkCode`
-3. Ajouter la transformation dans `generateFrameworkWrappers`
-4. Ajouter l'option dans le sélecteur `exportTab` (HomeView)
+## Contribuer
 
-### Tests
-Des tests basiques valident l'interpolation et les wrappers: `heroTemplate.spec.ts`.
+PRs bienvenus : ajouter des composants, corriger des bugs, améliorer l'UX mobile.
 
-### Prochaines idées
-- Tokens typographiques additionnels (taille titre responsive personnalisable)
-- Slots / toggles pour image produit ou capture d'écran
-- Palette intelligente générée depuis une couleur de base
-- Export natif Angular (Component decorator complet) & Svelte props
+## Licence
 
-## Mode Focalisé (Focused Builder)
-La route `/` charge désormais `FocusedBuilderView.vue` : une interface unifiée avec barre supérieure, panneau de paramètres (optionnel) et large prévisualisation.
+MIT © [Nom: jeremien6 - Email: contact@jeremiecode.fr]
 
-Caractéristiques:
-- Sélecteur de composant (Hero, CTA, Pricing, Features, FAQ, Testimonials)
-- Formulaire dynamique généré depuis `componentRegistry.ts`
-- Mise à jour live HTML + export multi-framework
-- Panneau code en bas avec onglets
 
-## Registry
-`componentRegistry.ts` centralise:
-- defaults (tokens)
-- metadata des champs (type, label, options, conditions)
-- fonction `build(tokens)` qui retourne le HTML Tailwind
-
-Pour ajouter un composant:
-1. Ajouter defaults + interface des tokens
-2. Ajouter buildXHtml
-3. Pousser l'objet dans `componentRegistry`
-4. (Optionnel) tests dans `registry.spec.ts`
-
-## Isolation du thème de la prévisualisation
-Dans `FocusedBuilderView.vue`, la zone de preview est désormais rendue dans un iframe via `PreviewIframe.vue`. Cela isole le thème de la preview (prop `dark`) du thème global de l'UI (classe `dark` sur `<html>`). Résultat: quand l'UI est en mode sombre et la preview en clair, les titres, sous-titres et boutons restent correctement lisibles.
+Développé avec ❤️ par Jeremiecode Corp. - Site: jeremiecode.fr
