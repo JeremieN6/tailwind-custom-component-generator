@@ -5,6 +5,7 @@ interface Props {
   html: string;
   dark?: boolean;
   paddingClass?: string; // e.g. 'p-10'
+  headStyles?: string; // raw <style> content injected into <head>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -36,6 +37,7 @@ function writeDoc() {
       .preview-container > .full-bleed { margin-left: calc(-1 * var(--pad, 0px)); margin-right: calc(-1 * var(--pad, 0px)); }
       .dark .preview-container{background:#0b0f19}
     </style>
+    ${props.headStyles ? `<style>${props.headStyles}</style>` : ''}
   </head>
   <body>
     <div class="preview-container ${props.paddingClass}">

@@ -11,6 +11,11 @@ const router = createRouter({
       component: FocusedBuilderView,
     },
     {
+      path: '/page',
+      name: 'page-builder',
+      component: () => import('../views/PageBuilderView.vue'),
+    },
+    {
       path: '/legacy',
       name: 'legacy',
       component: HomeView,

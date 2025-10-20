@@ -111,12 +111,23 @@ function buildFeaturesHtml(t: FeaturesTokens) {
 }
 
 // FAQ simple
-interface FaqTokens extends BaseTokens { title: string; subtitle: string; questions: string; }
-const faqDefaults: FaqTokens = { title: 'Frequently Asked Questions', subtitle: 'Get answers to common questions', questions: 'How does it work?,Is it customizable?,What frameworks are supported?', fontFamily:'Inter', primaryColor:'#3b82f6'};
+interface FaqTokens extends BaseTokens { title: string; subtitle: string; questions: string; variant?: 'bordered'|'cards'|'plain'; openFirst?: boolean; rounded?: string; }
+const faqDefaults: FaqTokens = { title: 'Frequently Asked Questions', subtitle: 'Get answers to common questions', questions: 'How does it work?,Is it customizable?,What frameworks are supported?', variant:'bordered', openFirst:false, rounded:'rounded-lg', fontFamily:'Inter', primaryColor:'#3b82f6'};
 function buildFaqHtml(t: FaqTokens){
   const qs = t.questions.split(',').map(q=>q.trim());
-    const ff = fontStack(t.fontFamily);
-    return `<section class=\"py-24\"><div class=\"px-6 max-w-4xl mx-auto text-center mb-14\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${ff}\">${t.subtitle}</p></div><div class=\"max-w-3xl mx-auto space-y-4\">${qs.map(q=>`<div class=\"border border-gray-200 dark:border-gray-700 p-4 rounded-lg flex justify-between items-center\" style=\"border-color:${t.primaryColor}30;font-family:${ff}\"><span class=\"text-gray-900 dark:text-white\">${q}</span><span class=\"w-6 h-6 flex items-center justify-center rounded-full text-white text-sm\" style=\"background:${t.primaryColor}\">+</span></div>`).join('')}</div></section>`;
+  const ff = fontStack(t.fontFamily);
+  const wrapper = t.variant==='cards' ? 'grid md:grid-cols-2 gap-4' : 'space-y-4';
+  return `<section class=\"py-24\"><div class=\"px-6 max-w-4xl mx-auto text-center mb-14\"><h2 class=\"text-4xl font-bold mb-4 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300\" style=\"font-family:${ff}\">${t.subtitle}</p></div><div class=\"max-w-3xl mx-auto ${wrapper}\">${qs.map((q,i)=>{
+    const open = t.openFirst && i===0;
+    if(t.variant==='cards'){
+      return `<div class=\"border border-gray-200 dark:border-gray-700 p-5 ${t.rounded} bg-white dark:bg-gray-900\" style=\"font-family:${ff}\"><div class=\"font-medium text-gray-900 dark:text-white mb-2\">${q}</div><div class=\"text-sm text-gray-600 dark:text-gray-300\">Lorem ipsum dolor sit amet.</div></div>`;
+    }
+    if(t.variant==='plain'){
+      return `<div class=\"py-2\" style=\"font-family:${ff}\"><div class=\"font-medium text-gray-900 dark:text-white\">${q}</div></div>`;
+    }
+    // bordered (default)
+    return `<div class=\"border border-gray-200 dark:border-gray-700 p-4 ${t.rounded}\" style=\"border-color:${t.primaryColor}30;font-family:${ff}\"><div class=\"flex justify-between items-center\"><span class=\"text-gray-900 dark:text-white\">${q}</span><span class=\"w-6 h-6 flex items-center justify-center rounded-full text-white text-sm\" style=\"background:${t.primaryColor}\">${open?'-':'+'}</span></div>${open?`<div class=\"mt-2 text-sm text-gray-600 dark:text-gray-300\">Lorem ipsum dolor sit amet.</div>`:''}</div>`;
+  }).join('')}</div></section>`;
 }
 
 // Testimonials simple
@@ -139,6 +150,7 @@ export const componentRegistry: ComponentDefinition[] = [
     description: 'Prominent marketing section',
     defaults: defaultHeroTokens,
     fields: [
+      { key: 'eyebrow', label: 'Eyebrow', type: 'text' },
       { key: 'title', label: 'Title', type: 'text' },
       { key: 'subtitle', label: 'Subtitle', type: 'textarea' },
       { key: 'primaryButtonLabel', label: 'Primary Button', type: 'text' },
@@ -150,9 +162,13 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'secondaryColor', label: 'Secondary Color', type: 'color' },
       { key: 'gradientFrom', label: 'Gradient From', type: 'color' },
       { key: 'gradientTo', label: 'Gradient To', type: 'color' },
+      { key: 'buttonStyle', label: 'Primary Button Style', type: 'select', options:[{label:'Solid',value:'solid'},{label:'Outline',value:'outline'},{label:'Soft',value:'soft'}] },
       { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] },
       { key: 'rounded', label: 'Rounded', type: 'select', options:[{label:'None',value:'rounded-none'},{label:'Default',value:'rounded'},{label:'md',value:'rounded-md'},{label:'lg',value:'rounded-lg'},{label:'xl',value:'rounded-xl'},{label:'Full',value:'rounded-full'}] },
-  { key: 'backgroundStyle', label: 'Background Style', type: 'select', options:[{label:'Theme (follows UI)',value:'theme'},{label:'Gradient',value:'gradient'},{label:'Solid',value:'solid'},{label:'Image',value:'image'}] }
+      { key: 'backgroundStyle', label: 'Background Style', type: 'select', options:[{label:'Theme (follows UI)',value:'theme'},{label:'Gradient',value:'gradient'},{label:'Solid',value:'solid'},{label:'Image',value:'image'}] },
+      { key: 'bgImageUrl', label: 'Background Image URL', type: 'text', condition:(t:any)=> t.backgroundStyle==='image' },
+      { key: 'overlayOpacity', label: 'Overlay Opacity (0..1)', type: 'text', condition:(t:any)=> t.backgroundStyle==='image' },
+      { key: 'fullBleed', label: 'Full Bleed', type: 'boolean' }
     ],
     build: (tokens:any)=>buildHeroHtml(tokens)
   },
@@ -221,6 +237,9 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'title', label: 'Title', type: 'text' },
       { key: 'subtitle', label: 'Subtitle', type: 'textarea' },
       { key: 'questions', label: 'Questions (comma list)', type: 'text' },
+      { key: 'variant', label: 'Style', type: 'select', options:[{label:'Bordered',value:'bordered'},{label:'Cards',value:'cards'},{label:'Plain',value:'plain'}] },
+      { key: 'openFirst', label: 'Open first item', type: 'boolean' },
+      { key: 'rounded', label: 'Rounded', type: 'select', options:[{label:'Default',value:'rounded'},{label:'lg',value:'rounded-lg'},{label:'xl',value:'rounded-xl'}] },
       { key: 'primaryColor', label: 'Primary Color', type: 'color' },
       { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] }
     ],
@@ -245,13 +264,19 @@ export const componentRegistry: ComponentDefinition[] = [
   }
 ];
 
+import { themeVariablesStyle, useThemeStore } from './theme';
+
 export function generateFrameworks(html: string) {
-  // minimal duplication of existing logic
-  const vue = `<template>\n${html}\n</template>\n<script setup lang=\"ts\"></script>`;
-  const react = `export function Component(){\n  return (<>\n${html.replace(/class=\\"/g,'className=\"')}\n  </>);\n}`;
-  const svelte = html;
-  const angular = `<div class=\"wrapper\">\n${html}\n</div>`;
-  const plain = html;
+  const theme = useThemeStore();
+  const vars = themeVariablesStyle(theme.tokens);
+  const fonts = `<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap\" rel=\"stylesheet\">`;
+  const style = `<style>${vars}</style>`;
+
+  const vue = `<template>\n${html}\n</template>\n<script setup lang=\"ts\"></script>\n<!-- Include in <head>: -->\n${fonts}\n${style}`;
+  const react = `export function Component(){\n  return (<>\n${html.replace(/class=\\\"/g,'className=\"')}\n  </>);\n}\n// Include in <head>:\n// ${fonts}\n// ${style}`;
+  const svelte = `<svelte:head>\n${fonts}\n${style}\n</svelte:head>\n${html}`;
+  const angular = `// Include in index.html <head>:\n// ${fonts}\n// ${style}\n\n<div class=\"wrapper\">\n${html}\n</div>`;
+  const plain = `<!doctype html>\n<html>\n<head>\n${fonts}\n${style}\n<script src=\"https://cdn.tailwindcss.com\"><\/script>\n</head>\n<body>\n${html}\n</body>\n</html>`;
   return { vue, react, svelte, angular, html: plain };
 }
 
@@ -261,17 +286,24 @@ export function generateFrameworks(html: string) {
 interface NavbarTokens extends BaseTokens {
   brand: string;
   links: string; // comma
+  ctaLabel?: string;
+  sticky?: boolean;
+  transparent?: boolean;
 }
 const navbarDefaults: NavbarTokens = {
   brand: 'BrandName',
   links: 'Features,Pricing,Docs,Contact',
+  ctaLabel: 'Sign in',
+  sticky: false,
+  transparent: false,
   fontFamily: 'Inter',
   primaryColor: '#3b82f6',
 };
 function buildNavbarHtml(t: NavbarTokens){
   const items = t.links.split(',').map(s=>s.trim());
   const ff = fontStack(t.fontFamily);
-  return `<nav class="py-4"><div class="px-6 max-w-6xl mx-auto flex items-center justify-between"><div class="text-lg font-semibold text-gray-900 dark:text-white" style="font-family:${ff}">${t.brand}</div><ul class="hidden md:flex items-center gap-6 text-sm" style="font-family:${ff}">${items.map(i=>`<li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">${i}</a></li>`).join('')}</ul><a href="#" class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded border border-gray-300 dark:border-gray-600" style="border-color:${t.primaryColor}50">☰</a></div></nav>`;
+  const wrapClass = [t.sticky?'sticky top-0 z-40 shadow-sm':'', t.transparent?'bg-transparent':'bg-white dark:bg-gray-900'].filter(Boolean).join(' ');
+  return `<nav class="${wrapClass}"><div class="py-4 px-6 max-w-6xl mx-auto flex items-center justify-between"><div class="text-lg font-semibold text-gray-900 dark:text-white" style="font-family:${ff}">${t.brand}</div><ul class="hidden md:flex items-center gap-6 text-sm" style="font-family:${ff}">${items.map(i=>`<li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">${i}</a></li>`).join('')}</ul><div class="flex items-center gap-3"><a href="#" class="hidden md:inline-flex px-4 py-2 text-sm rounded border" style="border-color:${t.primaryColor};color:${t.primaryColor};font-family:${ff}">${t.ctaLabel}</a><a href="#" class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded border border-gray-300 dark:border-gray-600" style="border-color:${t.primaryColor}50">☰</a></div></div></nav>`;
 }
 
 // Footer
@@ -312,6 +344,9 @@ componentRegistry.push(
     fields: [
       { key: 'brand', label: 'Brand', type: 'text' },
       { key: 'links', label: 'Links (comma list)', type: 'text' },
+      { key: 'ctaLabel', label: 'CTA Label', type: 'text' },
+      { key: 'sticky', label: 'Sticky', type: 'boolean' },
+      { key: 'transparent', label: 'Transparent', type: 'boolean' },
       { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] },
       { key: 'primaryColor', label: 'Primary Color', type: 'color' }
     ],

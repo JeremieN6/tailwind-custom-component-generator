@@ -12,3 +12,44 @@ body {
   width: 100%;
   min-height: 100vh;
 }
+
+/* Semantic theme variables (can be overridden per page/export) */
+:root {
+  --twb-color-primary: #3b82f6;
+  --twb-color-secondary: #64748b;
+  --twb-color-accent: #f59e0b;
+  --twb-color-success: #10b981;
+  --twb-color-warning: #f59e0b;
+  --twb-color-error: #ef4444;
+  --twb-color-info: #06b6d4;
+  --twb-color-bg: #ffffff;
+  --twb-color-surface: #f8fafc;
+  --twb-color-surface-soft: #f1f5f9;
+  --twb-color-surface-softer: #e2e8f0;
+  --twb-color-text: #0f172a;
+  --twb-color-muted: #6b7280;
+
+  --twb-radius-sm: 0.125rem;
+  --twb-radius-md: 0.375rem;
+  --twb-radius-lg: 0.5rem;
+  --twb-radius-xl: 0.75rem;
+  --twb-radius-full: 9999px;
+
+  --twb-font-title: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --twb-font-body: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --twb-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.twb-font-title { font-family: var(--twb-font-title); }
+.twb-font-body { font-family: var(--twb-font-body); }
+.twb-font-mono { font-family: var(--twb-font-mono); }
+
+/* Optional: dark mode variable overrides (scoped to html.dark) */
+html.dark {
+  --twb-color-bg: #0b0f19;
+  --twb-color-surface: #0f172a;
+  --twb-color-surface-soft: #111827;
+  --twb-color-surface-softer: #0b1220;
+  --twb-color-text: #e5e7eb;
+  --twb-color-muted: #9ca3af;
+}

@@ -88,7 +88,8 @@ function toggleDark(){ darkMode.value = !darkMode.value; }
           </div>
         </div>
         <button @click="showEditor = !showEditor" class="text-xs px-3 py-1.5 rounded border border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 transition">{{ showEditor ? 'Hide' : 'Show' }} Settings</button>
-        <div class="ml-auto flex items-center gap-2">
+        <div class="ml-auto flex items-center gap-3">
+          <router-link to="/page" class="hidden sm:inline-flex text-xs px-2 py-1.5 rounded border border-indigo-300 text-indigo-700 dark:border-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30">Open Page Builder →</router-link>
           <!-- full select for md+ screens -->
           <select v-model="codeTab" class="hidden sm:inline-flex bg-white dark:bg-gray-800 text-sm px-2 py-1.5 rounded border border-gray-300 dark:border-gray-700">
             <option value="vue">Vue</option>

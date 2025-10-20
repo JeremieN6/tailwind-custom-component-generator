@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
 import { componentRegistry, generateFrameworks } from '../../stores/componentRegistry';
+beforeAll(() => {
+    setActivePinia(createPinia());
+});
 describe('component registry', () => {
     it('contains hero and cta definitions', () => {
         const ids = componentRegistry.map(c => c.id);
