@@ -2,6 +2,7 @@
 import { buildHeroHtml } from './heroTemplate';
 import { defaultFaqTokens as interactiveFaqDefaults, buildFaqHtml as buildInteractiveFaqHtml } from './faqTemplate';
 import { defaultCarouselTokens as carouselDefaults, buildCarouselHtml } from './carouselTemplate';
+import { defaultTabsTokens as tabsDefaults, buildTabsHtml } from './tabsTemplate';
 
 function fontStack(font: string) {
   const needsQuote = /\s/.test(font);
@@ -280,6 +281,22 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'primaryColor', label: 'Primary Color', type: 'color' }
     ],
     build: (t:any)=>buildCarouselHtml(t)
+  },
+  {
+    id: 'tabs',
+    label: 'Tabs (Interactive)',
+    category: 'Content',
+    description: 'Tabbed content navigation',
+    defaults: tabsDefaults as any,
+    fields: [
+      { key: 'labels', label: 'Tabs labels (comma)', type: 'textarea' },
+      { key: 'activeIndex', label: 'Active index', type: 'text' },
+      { key: 'variant', label: 'Style', type: 'select', options:[{label:'Underline',value:'underline'},{label:'Cards',value:'cards'}] },
+      { key: 'rounded', label: 'Rounded', type: 'select', options:[{label:'Default',value:'rounded'},{label:'lg',value:'rounded-lg'},{label:'xl',value:'rounded-xl'}] },
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] },
+      { key: 'primaryColor', label: 'Primary Color', type: 'color' }
+    ],
+    build: (t:any)=>buildTabsHtml(t)
   }
 ];
 
