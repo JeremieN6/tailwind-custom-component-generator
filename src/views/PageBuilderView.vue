@@ -6,6 +6,8 @@ import { useThemeStore, themeVariablesStyle } from '../stores/theme';
 import DynamicEditor from '../components/DynamicEditor.vue';
 import PreviewIframe from '../components/PreviewIframe.vue';
 import ThemeCustomizer from '../components/ThemeCustomizer.vue';
+import PageExportModal from '../components/PageExportModal.vue';
+import { aggregatePageFrameworks, type AggregatedFrameworks } from '../stores/exportAggregator';
 
 const page = usePageBuilderStore();
 onMounted(()=> page.load());
@@ -26,6 +28,19 @@ const pageHtml = computed(()=> page.blocks.map(b=>{
 }).join('\n'));
 
 const headVars = computed(()=> themeVariablesStyle(theme.tokens));
+
+// Export modal state and handler
+import { ref } from 'vue';
+const showExport = ref(false);
+const exportOutputs = ref<AggregatedFrameworks|null>(null);
+function openExport(){
+  const blocksHtml = page.blocks.map(b=>{
+    const def = registryMap[b.id];
+    return def ? def.build(b.tokens) : '';
+  });
+  exportOutputs.value = aggregatePageFrameworks(blocksHtml);
+  showExport.value = true;
+}
 </script>
 
 <template>
@@ -39,7 +54,10 @@ const headVars = computed(()=> themeVariablesStyle(theme.tokens));
             <option v-for="c in componentRegistry" :key="c.id" :value="c.id">{{ c.label }}</option>
           </select>
         </div>
-        <div class="ml-auto text-xs text-gray-500">MVP Page Builder</div>
+        <div class="ml-auto flex items-center gap-2">
+          <button class="text-xs px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white" @click="openExport">Export page</button>
+          <div class="text-xs text-gray-500">MVP Page Builder</div>
+        </div>
       </div>
     </div>
 
@@ -80,6 +98,7 @@ const headVars = computed(()=> themeVariablesStyle(theme.tokens));
         </div>
       </div>
     </div>
+    <PageExportModal :is-open="showExport" :outputs="exportOutputs" @close="showExport=false" />
   </div>
 </template>
 
