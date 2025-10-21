@@ -5,6 +5,7 @@ import { usePageBuilderStore } from '../stores/pageBuilder';
 import { useThemeStore, themeVariablesStyle } from '../stores/theme';
 import DynamicEditor from '../components/DynamicEditor.vue';
 import PreviewIframe from '../components/PreviewIframe.vue';
+import ThemeCustomizer from '../components/ThemeCustomizer.vue';
 
 const page = usePageBuilderStore();
 onMounted(()=> page.load());
@@ -66,31 +67,7 @@ const headVars = computed(()=> themeVariablesStyle(theme.tokens));
 
         <div class="mt-6 border-t pt-4">
           <h3 class="text-xs font-semibold tracking-wide text-gray-400 mb-2">Theme</h3>
-          <div class="space-y-3">
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">Primary</label>
-              <input type="color" class="w-8 h-8 rounded border border-gray-300" :value="theme.tokens.colors.primary" @input="(e:any)=>theme.setColor('primary', e.target.value)" />
-            </div>
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">Secondary</label>
-              <input type="color" class="w-8 h-8 rounded border border-gray-300" :value="theme.tokens.colors.secondary" @input="(e:any)=>theme.setColor('secondary', e.target.value)" />
-            </div>
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">Accent</label>
-              <input type="color" class="w-8 h-8 rounded border border-gray-300" :value="theme.tokens.colors.accent" @input="(e:any)=>theme.setColor('accent', e.target.value)" />
-            </div>
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">Radius</label>
-              <select class="w-full text-sm px-2 py-1 border rounded" :value="theme.tokens.radii.md" @change="(e:any)=>theme.setRadius('md', e.target.value)">
-                <option value="0rem">None</option>
-                <option value="0.25rem">sm</option>
-                <option value="0.375rem">md</option>
-                <option value="0.5rem">lg</option>
-                <option value="0.75rem">xl</option>
-                <option value="9999px">full</option>
-              </select>
-            </div>
-          </div>
+          <ThemeCustomizer />
         </div>
       </aside>
 
