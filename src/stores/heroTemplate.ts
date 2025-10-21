@@ -112,7 +112,7 @@ export function buildHeroHtml(tokens: HeroTokens): string {
   }
 
   const secondaryBtn = tokens.showSecondary
-    ? `<a href="#" class="inline-flex items-center px-8 py-3 font-medium ring-1 ring-inset transition ${tokens.rounded} text-gray-700 dark:text-white/90 ring-gray-300 dark:ring-white/40 hover:bg-gray-100 dark:hover:bg-white/10" style="font-family:${ff}">${tokens.secondaryButtonLabel || 'Learn more'}</a>`
+    ? `<a href="#" class="twb-btn twb-btn-outline ${tokens.rounded}" style="--btn-color:${tokens.secondaryColor || '#64748b'};font-family:${ff}">${tokens.secondaryButtonLabel || 'Learn more'}</a>`
     : '';
 
   return `<section class="relative overflow-hidden ${bgClass} py-24 ${bleedClass}" ${styleAttr}>
