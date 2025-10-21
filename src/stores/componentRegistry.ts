@@ -59,7 +59,7 @@ const ctaDefaults: CtaTokens = {
 function buildCtaHtml(t: CtaTokens) {
   const align = t.align === 'center' ? 'text-center mx-auto' : 'text-left';
   const ff = fontStack(t.fontFamily);
-  return `<section class=\"py-20\"><div class=\"px-6 ${t.width} ${align}\"><h2 class=\"text-4xl font-bold mb-6 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300 mb-8\" style=\"font-family:${ff}\">${t.subtitle}</p><a href=\"#\" class=\"inline-flex px-8 py-3 text-white font-medium ${t.rounded}\" style=\"background:${t.primaryColor};font-family:${ff}\">${t.buttonLabel}</a></div></section>`;
+  return `<section class=\"py-20\"><div class=\"px-6 ${t.width} ${align}\"><h2 class=\"text-4xl font-bold mb-6 text-gray-900 dark:text-white\" style=\"font-family:${ff}\">${t.title}</h2><p class=\"text-lg text-gray-600 dark:text-gray-300 mb-8\" style=\"font-family:${ff}\">${t.subtitle}</p><a href=\"#\" class=\"twb-btn twb-btn-solid ${t.rounded}\" style=\"--btn-bg:${t.primaryColor};font-family:${ff}\">${t.buttonLabel}</a></div></section>`;
 }
 
 // Pricing simple

@@ -53,3 +53,25 @@ html.dark {
   --twb-color-text: #e5e7eb;
   --twb-color-muted: #9ca3af;
 }
+
+/* Component utilities driven by CSS variables */
+@layer components {
+  .twb-btn {
+    @apply inline-flex items-center px-8 py-3 font-medium transition;
+    border-radius: var(--twb-radius-md);
+    font-family: var(--twb-font-body);
+  }
+  .twb-btn-solid {
+    color: #fff;
+    background: var(--btn-bg, var(--twb-color-primary));
+  }
+  .twb-btn-outline {
+    color: var(--btn-color, var(--twb-color-primary));
+    background: transparent;
+    border: 1px solid currentColor;
+  }
+  .twb-btn-soft {
+    color: var(--btn-color, var(--twb-color-primary));
+    background: var(--btn-soft-bg, color-mix(in srgb, var(--btn-color, var(--twb-color-primary)) 15%, transparent));
+  }
+}

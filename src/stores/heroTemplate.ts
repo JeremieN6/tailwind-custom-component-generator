@@ -100,15 +100,15 @@ export function buildHeroHtml(tokens: HeroTokens): string {
     : '';
 
   // Buttons
-  const primaryBtnBase = `inline-flex items-center px-8 py-3 font-medium ${tokens.rounded}`;
+  const primaryBtnBase = `twb-btn ${tokens.rounded}`;
   let primaryBtn = '';
   const btnStyle = tokens.buttonStyle || 'solid';
   if (btnStyle === 'outline') {
-    primaryBtn = `<a href="#" class="${primaryBtnBase} ring-1 ring-inset" style="font-family:${ff};color:${tokens.primaryColor};border-color:${tokens.primaryColor}">${tokens.primaryButtonLabel}</a>`;
+    primaryBtn = `<a href="#" class="${primaryBtnBase} twb-btn-outline ring-1 ring-inset" style="font-family:${ff};--btn-color:${tokens.primaryColor}">${tokens.primaryButtonLabel}</a>`;
   } else if (btnStyle === 'soft') {
-    primaryBtn = `<a href="#" class="${primaryBtnBase} text-[color:var(--btn-color)] bg-[color:var(--btn-bg)]" style="--btn-bg:${tokens.primaryColor}20;--btn-color:${tokens.primaryColor};font-family:${ff}">${tokens.primaryButtonLabel}</a>`;
+    primaryBtn = `<a href="#" class="${primaryBtnBase} twb-btn-soft" style="--btn-color:${tokens.primaryColor};--btn-soft-bg:${tokens.primaryColor}20;font-family:${ff}">${tokens.primaryButtonLabel}</a>`;
   } else {
-    primaryBtn = `<a href="#" class="${primaryBtnBase} text-white shadow" style="background:${tokens.primaryColor};font-family:${ff}">${tokens.primaryButtonLabel}</a>`;
+    primaryBtn = `<a href="#" class="${primaryBtnBase} twb-btn-solid shadow" style="--btn-bg:${tokens.primaryColor};font-family:${ff}">${tokens.primaryButtonLabel}</a>`;
   }
 
   const secondaryBtn = tokens.showSecondary
