@@ -1,5 +1,7 @@
 // Import uniquement la fonction de construction Hero (les types ne sont pas nécessaires ici au runtime)
 import { buildHeroHtml } from './heroTemplate';
+import { defaultFaqTokens as interactiveFaqDefaults, buildFaqHtml as buildInteractiveFaqHtml } from './faqTemplate';
+import { defaultCarouselTokens as carouselDefaults, buildCarouselHtml } from './carouselTemplate';
 
 function fontStack(font: string) {
   const needsQuote = /\s/.test(font);
@@ -261,6 +263,23 @@ export const componentRegistry: ComponentDefinition[] = [
       { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'},{label:'Open Sans',value:'Open Sans'}] }
     ],
     build: (t:any)=>buildTestimonialsHtml(t)
+  },
+  {
+    id: 'carousel',
+    label: 'Carousel (Interactive)',
+    category: 'Content',
+    description: 'Image slider with autoplay and controls',
+    defaults: carouselDefaults as any,
+    fields: [
+      { key: 'images', label: 'Image URLs (comma)', type: 'textarea' },
+      { key: 'autoplay', label: 'Autoplay', type: 'boolean' },
+      { key: 'intervalMs', label: 'Interval (ms)', type: 'text' },
+      { key: 'showIndicators', label: 'Show indicators', type: 'boolean' },
+      { key: 'rounded', label: 'Rounded', type: 'select', options:[{label:'Default',value:'rounded'},{label:'lg',value:'rounded-lg'},{label:'xl',value:'rounded-xl'}] },
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Poppins',value:'Poppins'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] },
+      { key: 'primaryColor', label: 'Primary Color', type: 'color' }
+    ],
+    build: (t:any)=>buildCarouselHtml(t)
   }
 ];
 
@@ -302,8 +321,8 @@ const navbarDefaults: NavbarTokens = {
 function buildNavbarHtml(t: NavbarTokens){
   const items = t.links.split(',').map(s=>s.trim());
   const ff = fontStack(t.fontFamily);
-  const wrapClass = [t.sticky?'sticky top-0 z-40 shadow-sm':'', t.transparent?'bg-transparent':'bg-white dark:bg-gray-900'].filter(Boolean).join(' ');
-  return `<nav class="${wrapClass}"><div class="py-4 px-6 max-w-6xl mx-auto flex items-center justify-between"><div class="text-lg font-semibold text-gray-900 dark:text-white" style="font-family:${ff}">${t.brand}</div><ul class="hidden md:flex items-center gap-6 text-sm" style="font-family:${ff}">${items.map(i=>`<li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">${i}</a></li>`).join('')}</ul><div class="flex items-center gap-3"><a href="#" class="hidden md:inline-flex px-4 py-2 text-sm rounded border" style="border-color:${t.primaryColor};color:${t.primaryColor};font-family:${ff}">${t.ctaLabel}</a><a href="#" class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded border border-gray-300 dark:border-gray-600" style="border-color:${t.primaryColor}50">☰</a></div></div></nav>`;
+  const wrapClass = [t.sticky?'sticky top-0 z-40 shadow-sm':'', t.transparent?'bg-transparent':'twb-surface'].filter(Boolean).join(' ');
+  return `<nav class="${wrapClass}"><div class="py-4 px-6 max-w-6xl mx-auto flex items-center justify-between"><div class="text-lg font-semibold text-gray-900 dark:text-white" style="font-family:${ff}">${t.brand}</div><ul class="hidden md:flex items-center gap-6 text-sm" style="font-family:${ff}">${items.map(i=>`<li><a href="#" class="twb-text-muted hover:text-gray-900 dark:hover:text-white">${i}</a></li>`).join('')}</ul><div class="flex items-center gap-3"><a href="#" class="hidden md:inline-flex twb-btn twb-btn-outline text-sm rounded" style="--btn-color:${t.primaryColor};font-family:${ff}">${t.ctaLabel}</a><a href="#" class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded twb-border" style="border-color:${t.primaryColor}50">☰</a></div></div></nav>`;
 }
 
 // Footer
@@ -393,5 +412,22 @@ componentRegistry.push(
       { key: 'rounded', label: 'Rounded', type: 'select', options:[{label:'Default',value:'rounded'},{label:'lg',value:'rounded-lg'},{label:'xl',value:'rounded-xl'}] }
     ],
     build: (t:any)=>buildMediaTextHtml(t)
+  },
+  {
+    id: 'faq-interactive',
+    label: 'FAQ (Interactive)',
+    category: 'Content',
+    description: 'Accordion with framework wrappers',
+    defaults: interactiveFaqDefaults as any,
+    fields: [
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'subtitle', label: 'Subtitle', type: 'textarea' },
+      { key: 'questions', label: 'Questions (comma list)', type: 'text' },
+      { key: 'openFirst', label: 'Open first item', type: 'boolean' },
+      { key: 'rounded', label: 'Rounded', type: 'select', options:[{label:'Default',value:'rounded'},{label:'lg',value:'rounded-lg'},{label:'xl',value:'rounded-xl'}] },
+      { key: 'primaryColor', label: 'Primary Color', type: 'color' },
+      { key: 'fontFamily', label: 'Font Family', type: 'select', options:[{label:'Inter',value:'Inter'},{label:'Roboto',value:'Roboto'},{label:'Open Sans',value:'Open Sans'}] }
+    ],
+    build: (t:any)=>buildInteractiveFaqHtml(t)
   }
 );
