@@ -74,4 +74,12 @@ html.dark {
     color: var(--btn-color, var(--twb-color-primary));
     background: var(--btn-soft-bg, color-mix(in srgb, var(--btn-color, var(--twb-color-primary)) 15%, transparent));
   }
+  .twb-card {
+    background: var(--twb-color-surface);
+    border: 1px solid color-mix(in srgb, var(--twb-color-muted) 25%, transparent);
+    border-radius: var(--twb-radius-lg);
+  }
+  .twb-surface { background: var(--twb-color-surface); }
+  .twb-text-muted { color: var(--twb-color-muted); }
+  .twb-border { border: 1px solid color-mix(in srgb, var(--twb-color-muted) 25%, transparent); }
 }
