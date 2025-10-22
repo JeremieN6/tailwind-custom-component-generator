@@ -48,7 +48,13 @@ function download(){
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  const name = tab.value==='angular-standalone' ? `${ngComponentName.value}.ts` : `export-${tab.value}.txt`
+  let name = `export-${tab.value}.txt`
+  if(tab.value==='vue') name = 'Page.vue'
+  else if(tab.value==='react') name = 'Page.tsx'
+  else if(tab.value==='svelte') name = 'Page.svelte'
+  else if(tab.value==='angular') name = 'page-angular.txt'
+  else if(tab.value==='html') name = 'index.html'
+  else if(tab.value==='angular-standalone') name = `${ngComponentName.value}.ts`
   a.download = name
   document.body.appendChild(a)
   a.click()
@@ -78,7 +84,7 @@ function download(){
           <button @click="tab='angular-standalone'" :class="['px-3 py-1.5 text-xs rounded border', tab==='angular-standalone' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-700']">Angular Standalone</button>
           <div class="ml-auto">
             <button @click="copy" class="px-3 py-1.5 text-xs rounded bg-blue-600 hover:bg-blue-500 text-white">Copy</button>
-            <button v-if="tab==='angular-standalone'" @click="download" class="ml-2 px-3 py-1.5 text-xs rounded bg-emerald-600 hover:bg-emerald-500 text-white">Download .ts</button>
+            <button @click="download" class="ml-2 px-3 py-1.5 text-xs rounded bg-emerald-600 hover:bg-emerald-500 text-white">Download</button>
           </div>
         </div>
       </div>

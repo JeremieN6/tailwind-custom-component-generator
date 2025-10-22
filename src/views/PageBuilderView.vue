@@ -7,7 +7,7 @@ import DynamicEditor from '../components/DynamicEditor.vue';
 import PreviewIframe from '../components/PreviewIframe.vue';
 import ThemeCustomizer from '../components/ThemeCustomizer.vue';
 import PageExportModal from '../components/PageExportModal.vue';
-import { aggregatePageFrameworks, type AggregatedFrameworks } from '../stores/exportAggregator';
+import { aggregatePageFrameworks, type AggregatedFrameworks, type BlockExport } from '../stores/exportAggregator';
 import { generateAngularStandalone } from '../stores/angularStandalone';
 
 const page = usePageBuilderStore();
@@ -37,12 +37,27 @@ const exportOutputs = ref<AggregatedFrameworks|null>(null);
 const exportAngularStandalone = ref<string|undefined>(undefined);
 const exportAngularBaseHtml = ref<string|undefined>(undefined);
 function openExport(){
-  const blocksHtml = page.blocks.map(b=>{
+  const blocks: BlockExport[] = page.blocks.map(b=>{
     const def = registryMap[b.id];
-    return def ? def.build(b.tokens) : '';
-  });
-  const body = blocksHtml.join('\n');
-  exportOutputs.value = aggregatePageFrameworks(blocksHtml);
+    const html = def ? def.build(b.tokens) : ''
+    // Attach minimal HTML scripts for interactive components to leverage de-duplication
+    let scripts: BlockExport['scripts'] | undefined
+    if(b.id==='carousel'){
+      scripts = { html: `\n(function(){\n  var root = document.querySelector('[data-carousel]');\n  if(!root) return;\n  var track = root.querySelector('[data-track]');\n  var slides = Array.from(track.children);\n  var idx = 0;\n  function render(){ track.style.transform = 'translateX(' + (-idx*100) + '%)'; }\n  function next(){ idx = (idx+1) % slides.length; render(); }\n  function prev(){ idx = (idx-1+slides.length) % slides.length; render(); }\n  var btns = root.querySelectorAll('button[aria-label]');\n  if(btns[0]) btns[0].addEventListener('click', prev);\n  if(btns[1]) btns[1].addEventListener('click', next);\n  if(root.getAttribute('data-autoplay') === 'true'){ setInterval(next, parseInt(root.getAttribute('data-interval')||'3000',10)); }\n  render();\n})();\n` }
+    }
+    if(b.id==='tabs'){
+      scripts = { html: `\n(function(){\n  var root = document.querySelector('[data-tabs]');\n  if(!root) return;\n  var buttons = root.querySelectorAll('[data-tab]');\n  var panels = root.querySelectorAll('[data-panel]');\n  buttons.forEach(function(btn){\n    btn.addEventListener('click', function(){\n      var idx = parseInt(btn.getAttribute('data-tab')||'0',10);\n      panels.forEach(function(p,pi){ (p).style.display = (pi===idx)? 'block':'none'; });\n    });\n  });\n})();\n` }
+    }
+    if(b.id==='modal'){
+      scripts = { html: `\n(function(){\n  var root = document.querySelector('[data-modal-root]');\n  var openBtn = document.querySelector('[data-open-modal]');\n  if(!root || !openBtn) return;\n  function show(){ root.classList.remove('hidden'); }\n  function hide(){ root.classList.add('hidden'); }\n  openBtn.addEventListener('click', show);\n  var backdrop = root.querySelector('[data-backdrop]');\n  var closeBtn = root.querySelector('[data-close-modal]');\n  if(backdrop) backdrop.addEventListener('click', hide);\n  if(closeBtn) closeBtn.addEventListener('click', hide);\n})();\n` }
+    }
+    if(b.id==='faq-interactive'){
+      scripts = { html: `\n(function(){\n  var container = document.querySelector('[data-faq-root]') || document.currentScript && document.currentScript.previousElementSibling || document.body;\n  if(!container) return;\n  var items = container.querySelectorAll('.twb-border, .twb-card, .py-2');\n  items.forEach(function(item){\n    var header = item.querySelector('.flex');\n    if(!header) return;\n    header.addEventListener('click', function(){\n      var content = item.querySelector('.mt-2');\n      if(!content) return;\n      var isOpen = content.style.display !== 'none' && content.innerHTML.trim() !== '';\n      content.style.display = isOpen ? 'none' : 'block';\n    });\n  });\n})();\n` }
+    }
+    return scripts ? { html, scripts } : { html }
+  })
+  const body = blocks.map(b=>b.html).join('\n');
+  exportOutputs.value = aggregatePageFrameworks(blocks);
   exportAngularStandalone.value = generateAngularStandalone(body, { selector: 'app-exported-page', componentName: 'ExportedPageComponent' });
   exportAngularBaseHtml.value = body;
   showExport.value = true;
