@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import type { AggregatedFrameworks } from '../stores/exportAggregator'
+import { generateAngularStandalone } from '../stores/angularStandalone'
 
 interface Props {
   isOpen: boolean
   outputs: AggregatedFrameworks | null
+  angularStandalone?: string | null
+  angularBaseHtml?: string | null
 }
 
 interface Emits {
@@ -14,23 +17,44 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const tab = ref<'vue'|'react'|'svelte'|'angular'|'html'>('vue')
+type Tabs = 'vue'|'react'|'svelte'|'angular'|'html'|'angular-standalone'
+const tab = ref<Tabs>('vue')
+const ngSelector = ref('app-exported-page')
+const ngComponentName = ref('ExportedPageComponent')
 
 watch(() => props.isOpen, (open)=>{
   if(open){ tab.value = 'vue' }
 })
 
 const code = computed(()=>{
+  if(tab.value === 'angular-standalone'){
+    if(props.angularBaseHtml){
+      return generateAngularStandalone(props.angularBaseHtml, { selector: ngSelector.value, componentName: ngComponentName.value })
+    }
+    return props.angularStandalone || '// Generate the page first to get Angular Standalone output'
+  }
   if(!props.outputs) return '// Nothing to export'
   return props.outputs[tab.value]
 })
 
 function copy(){
-  if(!props.outputs) return
   navigator.clipboard.writeText(code.value)
 }
 
 function close(){ emit('close') }
+
+function download(){
+  const blob = new Blob([code.value], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  const name = tab.value==='angular-standalone' ? `${ngComponentName.value}.ts` : `export-${tab.value}.txt`
+  a.download = name
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
 </script>
 
 <template>
@@ -51,13 +75,21 @@ function close(){ emit('close') }
           <button @click="tab='svelte'" :class="['px-3 py-1.5 text-xs rounded border', tab==='svelte' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-700']">Svelte</button>
           <button @click="tab='angular'" :class="['px-3 py-1.5 text-xs rounded border', tab==='angular' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-700']">Angular</button>
           <button @click="tab='html'" :class="['px-3 py-1.5 text-xs rounded border', tab==='html' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-700']">HTML</button>
+          <button @click="tab='angular-standalone'" :class="['px-3 py-1.5 text-xs rounded border', tab==='angular-standalone' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-700']">Angular Standalone</button>
           <div class="ml-auto">
             <button @click="copy" class="px-3 py-1.5 text-xs rounded bg-blue-600 hover:bg-blue-500 text-white">Copy</button>
+            <button v-if="tab==='angular-standalone'" @click="download" class="ml-2 px-3 py-1.5 text-xs rounded bg-emerald-600 hover:bg-emerald-500 text-white">Download .ts</button>
           </div>
         </div>
       </div>
 
-      <div class="p-5 pt-3">
+      <div class="p-5 pt-3 space-y-3">
+        <div v-if="tab==='angular-standalone'" class="flex items-center gap-3">
+          <label class="text-xs text-gray-500">Selector</label>
+          <input v-model="ngSelector" type="text" class="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800" />
+          <label class="text-xs text-gray-500">Component</label>
+          <input v-model="ngComponentName" type="text" class="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800" />
+        </div>
         <pre class="bg-gray-950 text-gray-100 text-[12px] leading-relaxed p-4 rounded-lg overflow-auto max-h-[60vh] border border-gray-800"><code>{{ code }}</code></pre>
       </div>
     </div>

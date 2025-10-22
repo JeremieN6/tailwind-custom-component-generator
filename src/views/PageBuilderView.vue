@@ -8,6 +8,7 @@ import PreviewIframe from '../components/PreviewIframe.vue';
 import ThemeCustomizer from '../components/ThemeCustomizer.vue';
 import PageExportModal from '../components/PageExportModal.vue';
 import { aggregatePageFrameworks, type AggregatedFrameworks } from '../stores/exportAggregator';
+import { generateAngularStandalone } from '../stores/angularStandalone';
 
 const page = usePageBuilderStore();
 onMounted(()=> page.load());
@@ -33,12 +34,17 @@ const headVars = computed(()=> themeVariablesStyle(theme.tokens));
 import { ref } from 'vue';
 const showExport = ref(false);
 const exportOutputs = ref<AggregatedFrameworks|null>(null);
+const exportAngularStandalone = ref<string|undefined>(undefined);
+const exportAngularBaseHtml = ref<string|undefined>(undefined);
 function openExport(){
   const blocksHtml = page.blocks.map(b=>{
     const def = registryMap[b.id];
     return def ? def.build(b.tokens) : '';
   });
+  const body = blocksHtml.join('\n');
   exportOutputs.value = aggregatePageFrameworks(blocksHtml);
+  exportAngularStandalone.value = generateAngularStandalone(body, { selector: 'app-exported-page', componentName: 'ExportedPageComponent' });
+  exportAngularBaseHtml.value = body;
   showExport.value = true;
 }
 </script>
@@ -98,7 +104,7 @@ function openExport(){
         </div>
       </div>
     </div>
-    <PageExportModal :is-open="showExport" :outputs="exportOutputs" @close="showExport=false" />
+    <PageExportModal :is-open="showExport" :outputs="exportOutputs" :angular-standalone="exportAngularStandalone" :angular-base-html="exportAngularBaseHtml" @close="showExport=false" />
   </div>
 </template>
 
