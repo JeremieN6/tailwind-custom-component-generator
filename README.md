@@ -21,6 +21,7 @@ Le but est de réduire le temps nécessaire pour prototyper des sections UI réu
 - Choix de la police, couleurs, arrondis, images de fond et autres tokens visuels.
 - Preview isolée dans un iframe pour éviter les fuites de thème (dark/light) et de styles.
 - Export multi-framework (Vue, React, Svelte, Angular, HTML) et copie en un clic.
+- Page Builder avec export agrégé (un seul fichier par framework, polices et variables dédupliquées) et bouton « Export page ».
 - Génération de HTML via un registry centralisé (`src/stores/componentRegistry.ts`).
 
 ## Stack technique
@@ -70,6 +71,9 @@ Puis ouvrir `http://localhost:5173` (ou l'URL indiquée par Vite).
 - `src/components/DynamicEditor.vue` : formulaire dynamique généré depuis la registry
 - `src/stores/componentRegistry.ts` : registry centralisant tokens, métadonnées des champs et fonctions `build(tokens)` pour chaque composant
 - `src/stores/componentCustomizer.ts` : état Pinia pour les tokens et le HTML généré
+- `src/views/PageBuilderView.vue` : constructeur de page (ajout/ordre/duplication de blocs + export agrégé)
+- `src/stores/exportAggregator.ts` : agrégation multi-blocs, export single-file par framework
+- `src/components/PageExportModal.vue` : modal d’export avec onglets (Vue/React/Svelte/Angular/HTML)
 
 ## Comment ajouter un nouveau composant
 
@@ -77,6 +81,15 @@ Puis ouvrir `http://localhost:5173` (ou l'URL indiquée par Vite).
 2. Implémenter `buildXxxHtml(tokens: XxxTokens)` qui retourne le HTML Tailwind de la section.
 3. Enregistrer le composant dans la registry avec son formulaire de tokens (labels, types, options).
 4. (Optionnel) Ajouter des tests dans `src/components/__tests__`.
+
+## Export agrégé — Guide rapide
+
+1. Ouvrir le Page Builder (`/page`).
+2. Ajouter des blocs, ajuster les tokens et le thème.
+3. Cliquer sur « Export page » et choisir un onglet (Vue/React/Svelte/Angular/HTML).
+4. Copier le code. Ajoutez les `<link>` Google Fonts et le `<style>` (variables) dans le `<head>` de votre app si nécessaire.
+
+Guide détaillé par framework: `documents/EXPORT.md`.
 
 ## Bonnes pratiques et notes
 
